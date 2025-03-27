@@ -1,20 +1,27 @@
 // Game Board declaration
+var begin = false;                      // Only begin once names have been inputed
+
 const gameBoard = (function () {
-    let board = [
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]
-    ];
+    let board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+
     const render = function () {
+
         console.log("RENDER");
+        let html = "";
+        board.forEach((val, idx) => {
+            if (val == 0) {
+                html += `<div class="tile" id="${idx}"></div>`
+            } else {
+                html += `<div class="tile" id="${idx}">${val}</div>`
+            }
+        });
+        document.querySelector(".container").innerHTML = html;
     }
+
     const reset = function () {
-        board = [
-            [0, 0, 0],
-            [0, 0, 0],
-            [0, 0, 0]
-        ];
+        board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
     }
+
     const getBoard = () => board;
     const getVal = (r, c) => board[r][c];
     const setVal = function (r, c, val) { 
@@ -54,38 +61,26 @@ const gameState = (function () {
     // for a winner. Runs in O(1) space for a 3x3 board and
     // O(n) space for a nxn board.
     const checkWinner = function() {
-        // Check rows
-        for (let i = 0; i < 3; i++) {
-            if (board[i][0] !== 0 && board[i][0] === board[i][1] && board[i][1] === board[i][2]) {
+        // Define winning index combinations for a 3x3 board
+        const wins = [
+            [0, 1, 2], // Top row
+            [3, 4, 5], // Middle row
+            [6, 7, 8], // Bottom row
+            [0, 3, 6], // Left column
+            [1, 4, 7], // Middle column
+            [2, 5, 8], // Right column
+            [0, 4, 8], // Main diagonal
+            [2, 4, 6]  // Anti-diagonal
+        ];
+
+        for (let combo of wins) {
+            const [a, b, c] = combo;
+            if (board[a] !== 0 && board[a] === board[b] && board[b] === board[c]) {
                 finished = true;
-                return board[i][0];
+                return board[a];
             }
         }
 
-        // Check cols
-        for (let i = 0; i < 3; i++) {
-            if (board[0][i] !== 0 && board[0][i] === board[1][i] && board[i][1] === board[2][i]) {
-                finished = true;
-                return board[i][0];
-            }
-        }
-
-        // Check diags
-        if (board[0][0] !== 0 &&
-            board[0][0] === board[1][1] &&
-            board[1][1] === board[2][2]) {
-                finished = true;
-                return board[0][0];
-        }
-        
-        if (board[0][2] !== 0 &&
-            board[0][2] === board[1][1] &&
-            board[1][1] === board[2][0]) {
-                finished = true;
-                return board[0][2];
-        }
-
-        // If there is no winner yet
         return 0;
     };
 
