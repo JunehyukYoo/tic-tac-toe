@@ -25,7 +25,7 @@ const gameBoard = (function () {
     const getBoard = () => board;
     const getVal = (r, c) => board[r][c];
     const setVal = function (r, c, val) { 
-        board[r][c] = val;
+        board[(r * 3) + c] = val;
         render();
     };
     return { board, reset, render, getBoard, getVal, setVal };
@@ -87,5 +87,11 @@ const gameState = (function () {
     return {start, getPlayers, checkWinner};
 })();
 
-gameState.start();
+const form = document.querySelector("form")
+console.log(form);
+form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    console.log("HELLO!");
+    gameState.start();
+});
 
