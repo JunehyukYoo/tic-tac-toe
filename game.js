@@ -45,9 +45,20 @@ const gameState = (function () {
 
     const getPlayers = () => players;
 
-    const renderV2 = function () {
+    const render = function () {
         gameBoard.render();
         document.querySelector("#turn-indicator").textContent = `It is ${players[curPlayer].name}'s turn (${players[curPlayer].marker}).`.toUpperCase();
+    }
+
+    const reset = function () {
+        gameBoard.reset();
+        curPlayer = 0;
+        winner = null;
+        players = [];
+        finished = false;
+        document.querySelector("#turn-indicator").textContent = "ENTER PLAYER NAMES...";
+        document.querySelectorAll(".tile").forEach((tile) => tile.remove());
+        document.querySelectorAll("input").forEach((input) => input.value = "");
     }
     
     // Function to start game
@@ -62,7 +73,7 @@ const gameState = (function () {
         curPlayer = 0;
 
         gameBoard.reset();
-        renderV2();
+        render();
     };
 
     const switchPlayerTurn = () => curPlayer ? 0 : 1;
@@ -94,7 +105,7 @@ const gameState = (function () {
         return 0;
     };
 
-    return {start, getPlayers, checkWinner, switchPlayerTurn};
+    return {start, reset};
 })();
 
 const form = document.querySelector("form")
@@ -105,3 +116,8 @@ form.addEventListener("submit", (e) => {
     gameState.start();
 });
 
+document.querySelector("#reset").addEventListener("click", (e) => {
+    e.preventDefault();
+    console.log("Resetting game...");
+    gameState.reset();
+});
