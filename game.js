@@ -1,6 +1,4 @@
 // Game Board declaration
-var begin = false;                      // Only begin once names have been inputed
-
 const gameBoard = (function () {
     let board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
@@ -33,10 +31,9 @@ const gameBoard = (function () {
 
 // Game State declaration
 const gameState = (function () {
-    let finished = false;
     let curPlayer = 0;                      // 0 = "O", 1 = "X"
-    let winner = null;
     let players = [];
+    let totalMoves = 0;
 
     // Player "constructor"
     const Player = function (name, marker) {
@@ -53,14 +50,17 @@ const gameState = (function () {
         if (gameBoard.getBoard()[idx] !== "0") {
             gameBoard.setVal1D(idx, marker);
             switchPlayerTurn();
+            totalMoves++;
             render();
         }
 
+        // Checks for the winner
         const val = checkWinner();
         if (val) {
             switchPlayerTurn();
             setTimeout(() => alert(`${players[curPlayer].name} won!`), 500);
-
+        } else if (totalMoves === 9) {
+            setTimeout(() => alert(`Draw! Reset to try again.`), 500);
         }
     }
 
@@ -77,9 +77,8 @@ const gameState = (function () {
     const reset = function () {
         gameBoard.reset();
         curPlayer = 0;
-        winner = null;
+        totalMoves = 0;
         players = [];
-        finished = false;
         document.querySelector("#turn-indicator").textContent = "ENTER PLAYER NAMES...";
         document.querySelectorAll(".tile").forEach((tile) => tile.remove());
         document.querySelectorAll("input").forEach((input) => input.value = "");
@@ -92,11 +91,9 @@ const gameState = (function () {
         players = [Player(inputs[0].value, "O"), Player(inputs[1].value, "X")];
 
         // Sanity checks
-        winner = null;
-        finished = false;
         curPlayer = 0;
-
         gameBoard.reset();
+
         render();
     };
 
@@ -123,13 +120,9 @@ const gameState = (function () {
         for (let combo of wins) {
             const [a, b, c] = combo;
             if (board[a] !== 0 && board[a] === board[b] && board[b] === board[c]) {
-                finished = true;
                 return board[a];
             }
         }
-
-        console.log("no winner");
-
         return 0;
     };
 
