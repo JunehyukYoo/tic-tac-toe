@@ -15,7 +15,7 @@ const gameBoard = (function () {
                 html += `<div class="tile" id="${idx}">${val}</div>`
             }
         });
-        document.querySelector(".container").innerHTML = html;
+        document.querySelector(".tile-container").innerHTML = html;
     }
 
     const reset = function () {
@@ -44,18 +44,28 @@ const gameState = (function () {
     };
 
     const getPlayers = () => players;
+
+    const renderV2 = function () {
+        gameBoard.render();
+        document.querySelector("#turn-indicator").textContent = `It is ${players[curPlayer].name}'s turn (${players[curPlayer].marker}).`.toUpperCase();
+    }
     
     // Function to start game
     const start = function() {
-        players = [Player("temp", "O"), Player("tempAgain", "X")];
+        // Create players
+        const inputs = document.querySelectorAll("input");
+        players = [Player(inputs[0].value, "O"), Player(inputs[1].value, "X")];
+
         // Sanity checks
         winner = null;
         finished = false;
         curPlayer = 0;
 
         gameBoard.reset();
-        gameBoard.render();
+        renderV2();
     };
+
+    const switchPlayerTurn = () => curPlayer ? 0 : 1;
 
     // Function to manually check each row/col/diagonal
     // for a winner. Runs in O(1) space for a 3x3 board and
@@ -84,14 +94,14 @@ const gameState = (function () {
         return 0;
     };
 
-    return {start, getPlayers, checkWinner};
+    return {start, getPlayers, checkWinner, switchPlayerTurn};
 })();
 
 const form = document.querySelector("form")
 console.log(form);
 form.addEventListener("submit", (e) => {
     e.preventDefault();
-    console.log("HELLO!");
+    console.log("Starting game...");
     gameState.start();
 });
 

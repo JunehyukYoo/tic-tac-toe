@@ -24,7 +24,7 @@ h1 {
     margin: 0 0 1rem 0;
 }
 
-.container {
+.tile-container {
     display: grid;
     column-gap: var(--tile-gap);
     row-gap: var(--tile-gap);
@@ -43,6 +43,13 @@ h1 {
 
 .tile:hover {
     background-color: rgba(0, 0, 0, 0.2);
+}
+
+#turn-indicator {
+    text-align: center;
+    margin-top: 20px;
+
+    font-size: 2rem;
 }
 
 form {
