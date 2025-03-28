@@ -2,6 +2,7 @@
 const gameBoard = (function () {
     let board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
+    // Renders only the tiles for the game
     const render = function () {
         let html = "";
         board.forEach((val, idx) => {
@@ -58,13 +59,21 @@ const gameState = (function () {
         const val = checkWinner();
         if (val) {
             switchPlayerTurn();
-            setTimeout(() => alert(`${players[curPlayer].name} won!`), 500);
+            showOverlay(`${players[curPlayer].name} won!`.toUpperCase());
+            //setTimeout(() => alert(`${players[curPlayer].name} won!`), 500);
+            document.querySelector("#close-overlay").addEventListener("click", () => {
+                hideOverlay();
+            });
         } else if (totalMoves === 9) {
-            setTimeout(() => alert(`Draw! Reset to try again.`), 500);
+            showOverlay(`Draw! Reset to try again.`.toUpperCase());
+            //setTimeout(() => alert(`Draw! Reset to try again.`), 500);
+            document.querySelector("#close-overlay").addEventListener("click", () => {
+                hideOverlay();
+            });
         }
     }
 
-    // Renders everything on the page
+    // Renders everything on the page (including tiles with the gameBoard method)
     const render = function () {
         gameBoard.render();
         document.querySelector("#turn-indicator").textContent = `It is ${players[curPlayer].name}'s turn (${players[curPlayer].marker}).`.toUpperCase();
@@ -126,10 +135,24 @@ const gameState = (function () {
         return 0;
     };
 
+    // Utility functions to control the overlay after win/draw
+    function showOverlay(message) {
+        const overlay = document.querySelector("#overlay");
+        const resultMessage = document.querySelector("#result-message");
+        resultMessage.textContent = message;
+        overlay.style.display = "flex";  
+    }
+    
+    function hideOverlay() {
+        const overlay = document.querySelector("#overlay");
+        overlay.style.display = "none";
+    }
+
     return {start, reset};
 })();
 
-const form = document.querySelector("form")
+// Start game/site up
+const form = document.querySelector("form");
 console.log(form);
 form.addEventListener("submit", (e) => {
     e.preventDefault();
