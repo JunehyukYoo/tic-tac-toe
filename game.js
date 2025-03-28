@@ -5,8 +5,6 @@ const gameBoard = (function () {
     let board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
     const render = function () {
-
-        console.log("RENDER");
         let html = "";
         board.forEach((val, idx) => {
             if (val == 0) {
@@ -26,9 +24,11 @@ const gameBoard = (function () {
     const getVal = (r, c) => board[r][c];
     const setVal = function (r, c, val) { 
         board[(r * 3) + c] = val;
-        render();
     };
-    return { board, reset, render, getBoard, getVal, setVal };
+    const setVal1D = function (i, val) { 
+        board[i] = val;
+    };
+    return { board, reset, render, getBoard, getVal, setVal, setVal1D };
 })();
 
 // Game State declaration
@@ -43,11 +43,35 @@ const gameState = (function () {
         return {name, marker};
     };
 
-    const getPlayers = () => players;
+    // Handle player moves
+    const handleClick = function (e) {
+        console.log("CLICKED!");
+        const idx = parseInt(e.target.id);
+        const marker = players[curPlayer].marker;
+        
+        // Change values and render
+        if (gameBoard.getBoard()[idx] !== "0") {
+            gameBoard.setVal1D(idx, marker);
+            switchPlayerTurn();
+            render();
+        }
 
+        const val = checkWinner();
+        if (val) {
+            switchPlayerTurn();
+            setTimeout(() => alert(`${players[curPlayer].name} won!`), 500);
+
+        }
+    }
+
+    // Renders everything on the page
     const render = function () {
         gameBoard.render();
         document.querySelector("#turn-indicator").textContent = `It is ${players[curPlayer].name}'s turn (${players[curPlayer].marker}).`.toUpperCase();
+
+        document.querySelectorAll(".tile").forEach((tile) => {
+            tile.addEventListener("click", handleClick);
+        });
     }
 
     const reset = function () {
@@ -76,7 +100,7 @@ const gameState = (function () {
         render();
     };
 
-    const switchPlayerTurn = () => curPlayer ? 0 : 1;
+    const switchPlayerTurn = () => curPlayer = curPlayer ? 0 : 1;
 
     // Function to manually check each row/col/diagonal
     // for a winner. Runs in O(1) space for a 3x3 board and
@@ -94,6 +118,8 @@ const gameState = (function () {
             [2, 4, 6]  // Anti-diagonal
         ];
 
+        const board = gameBoard.getBoard();
+
         for (let combo of wins) {
             const [a, b, c] = combo;
             if (board[a] !== 0 && board[a] === board[b] && board[b] === board[c]) {
@@ -101,6 +127,8 @@ const gameState = (function () {
                 return board[a];
             }
         }
+
+        console.log("no winner");
 
         return 0;
     };
